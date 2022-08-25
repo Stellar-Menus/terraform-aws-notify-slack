@@ -23,7 +23,6 @@ locals {
     resources = [var.kms_key_arn]
   }
 
-  lambda_handler = try(split(".", basename(var.lambda_source_path))[0], "notify_slack")
 }
 
 data "aws_iam_policy_document" "lambda" {
@@ -79,14 +78,19 @@ module "lambda" {
   function_name = var.lambda_function_name
   description   = var.lambda_description
 
-  handler                        = "${local.lambda_handler}.lambda_handler"
-  source_path                    = var.lambda_source_path != null ? "${path.root}/${var.lambda_source_path}" : "${path.module}/functions/notify_slack.py"
+  handler                        = var.lambda_handler
   recreate_missing_package       = var.recreate_missing_package
-  runtime                        = "python3.8"
+  runtime                        = var.lambda_runtime
   timeout                        = 30
   kms_key_arn                    = var.kms_key_arn
   reserved_concurrent_executions = var.reserved_concurrent_executions
   ephemeral_storage_size         = var.lambda_function_ephemeral_storage_size
+
+  create_package = false
+  s3_existing_package = {
+    bucket = var.lambda_s3_bucket
+    key    = var.lambda_package_key
+  }
 
   # If publish is disabled, there will be "Error adding new Lambda Permission for notify_slack:
   # InvalidParameterValueException: We currently do not support adding policies for $LATEST."

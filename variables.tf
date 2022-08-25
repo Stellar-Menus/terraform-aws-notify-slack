@@ -191,3 +191,27 @@ variable "subscription_filter_policy" {
   type        = string
   default     = null
 }
+
+variable "lambda_runtime" {
+  description = "The runtime to use for the Lambda function"
+  type        = string
+  default     = "go1.x"
+}
+
+variable "lambda_handler" {
+  description = "The name of the handler function"
+  type        = string
+  default     = "notify_slack"
+}
+
+variable "lambda_package_key" {
+  description = "The key of the package in the artifact to use for the Lambda function"
+  type        = string
+  default     = "notify_slack"
+}
+
+variable "lambda_s3_bucket" {
+  description = "The S3 bucket in which the Lambda function package is stored"
+  type        = string
+  default     = null
+}
